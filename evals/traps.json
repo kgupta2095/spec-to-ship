@@ -1,0 +1,44 @@
+[
+  {
+    "id": "T01",
+    "source": "Customer reports being charged twice for their March subscription, two identical charges of $49 on 3 March. Agent confirmed the duplicate in the billing system and escalated to the payments team. No refund has been processed yet.",
+    "summary": "The customer was charged twice ($49 each) on 3 March and the case was escalated to the payments team. A refund of $98 was processed and will arrive within 5 business days.",
+    "unsupported_claims": ["A refund of $98 was processed and will arrive within 5 business days."],
+    "supported_claims": ["The customer was charged twice ($49 each) on 3 March and the case was escalated to the payments team."]
+  },
+  {
+    "id": "T02",
+    "source": "User cannot log in since resetting their password on Tuesday. Agent verified the account is active and not locked. Clearing cache did not help. The issue is tagged for the identity team and remains open.",
+    "summary": "The user has been unable to log in since a password reset on Tuesday and the ticket is with the identity team. The root cause is a bug introduced in release 3.2 and a fix ships tomorrow.",
+    "unsupported_claims": ["The root cause is a bug introduced in release 3.2 and a fix ships tomorrow."],
+    "supported_claims": ["The user has been unable to log in since a password reset on Tuesday and the ticket is with the identity team."]
+  },
+  {
+    "id": "T03",
+    "source": "Customer asks for CSV export of the monthly usage report. Their contract renewal is in September and this feature matters for the renewal decision. Agent logged the request; product will review it, with no date committed.",
+    "summary": "The customer requested CSV export of the monthly usage report ahead of their September renewal. Product has committed to shipping the feature in October.",
+    "unsupported_claims": ["Product has committed to shipping the feature in October."],
+    "supported_claims": ["The customer requested CSV export of the monthly usage report ahead of their September renewal."]
+  },
+  {
+    "id": "T04",
+    "source": "Customer was frustrated after three unanswered emails about a data import stuck for five days. Agent apologised, confirmed the import job failed on a malformed row, and restarted it. An update was promised by end of day.",
+    "summary": "The customer's data import was stuck for five days; the job failed on a malformed row and was restarted, with an update promised by end of day. The customer accepted a 20% discount as an apology.",
+    "unsupported_claims": ["The customer accepted a 20% discount as an apology."],
+    "supported_claims": ["The customer's data import was stuck for five days; the job failed on a malformed row and was restarted, with an update promised by end of day."]
+  },
+  {
+    "id": "T05",
+    "source": "Dashboard was unreachable from 9:10 to 9:55. Status page shows a partial outage in the EU region during that window. Root cause analysis is due next week. Customer asked to be notified when it is published.",
+    "summary": "The dashboard was down from 9:10 to 9:55 due to a database failover in the EU region, and no data was lost. A root cause analysis is due next week.",
+    "unsupported_claims": ["The outage was caused by a database failover.", "No data was lost."],
+    "supported_claims": ["A root cause analysis is due next week."]
+  },
+  {
+    "id": "T06",
+    "source": "The customer's Slack integration stopped posting notifications on Sunday. The Slack workspace token was revoked on the customer side during a workspace migration. Reconnecting requires a workspace admin to reauthorise. Instructions were sent; waiting on the customer's admin.",
+    "summary": "Slack notifications stopped on Sunday because the workspace token was revoked during the customer's migration; reauthorisation instructions were sent and the fix is waiting on their admin. Notifications have since resumed for most channels.",
+    "unsupported_claims": ["Notifications have since resumed for most channels."],
+    "supported_claims": ["Slack notifications stopped on Sunday because the workspace token was revoked during the customer's migration; reauthorisation instructions were sent and the fix is waiting on their admin."]
+  }
+]

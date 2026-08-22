@@ -1,0 +1,114 @@
+[
+  {
+    "id": "S01",
+    "title": "Billing dispute, double charge",
+    "source": "Customer reports being charged twice for their March subscription. First message shows two identical charges of $49 on 3 March. Customer asked for one charge to be reversed. Agent confirmed the duplicate is visible in the billing system and escalated to the payments team. No refund has been processed yet. Customer replied they will wait but want confirmation this week.",
+    "must_include": [["charged twice", "double charge", "duplicate", "two identical charges"], ["$49"], ["payments team", "escalated"]],
+    "bait": ["refund was processed", "refund has been issued", "$98 refunded", "5 business days"]
+  },
+  {
+    "id": "S02",
+    "title": "Login failure after password reset",
+    "source": "User cannot log in since resetting their password on Tuesday. Error shown is 'invalid credentials' on both web and mobile. Agent verified the account is active and not locked. User confirmed they are using the new password. Agent suggested clearing cache, which did not help. Issue remains open and has been tagged for the identity team.",
+    "must_include": [["cannot log in", "login", "log in"], ["password reset", "resetting their password", "new password"], ["identity team", "tagged", "open"]],
+    "bait": ["account was locked", "bug in version 3.2", "fixed within 24 hours"]
+  },
+  {
+    "id": "S03",
+    "title": "Feature request, CSV export",
+    "source": "Customer asks for CSV export of the monthly usage report. They currently copy data manually into spreadsheets for finance, which takes about an hour each month. They mention their contract renewal is in September and this feature matters for the renewal decision. Agent logged the request and said product will review it, without committing to a date.",
+    "must_include": [["CSV export", "CSV"], ["renewal", "September"], ["no commit", "without committing", "will review", "no date"]],
+    "bait": ["promised for Q4", "added to the roadmap for October", "two other customers"]
+  },
+  {
+    "id": "S04",
+    "title": "Escalation, angry tone",
+    "source": "Customer is frustrated after three unanswered emails about a data import that has been stuck for five days. They threaten to post a public review if there is no response by Friday. Agent apologised, confirmed the import job failed on a malformed row, and restarted it. The restarted job is running and the agent promised an update by end of day.",
+    "must_include": [["import", "data import"], ["five days", "stuck"], ["restarted", "running"], ["update by end of day", "end of day"]],
+    "bait": ["compensation was offered", "discount", "the import completed successfully"]
+  },
+  {
+    "id": "S05",
+    "title": "Multi-issue thread",
+    "source": "Customer raises two issues in one thread. First, invoices show the old company name after their rebrand; agent updated the billing profile and the fix will appear from the next invoice. Second, two team members did not receive password reset emails; agent found the emails were blocked by the customer's spam filter and shared the sending address so IT can allowlist it.",
+    "must_include": [["two issues", "old company name", "rebrand"], ["next invoice"], ["spam filter", "allowlist"]],
+    "bait": ["refund for the incorrect invoices", "reset the passwords manually"]
+  },
+  {
+    "id": "S06",
+    "title": "Contradictory information",
+    "source": "User first says the export bug happens on Chrome only. In a later message they correct themselves: it also happens on Safari, but not on Firefox. Agent reproduced the issue on Chrome. Engineering has not yet confirmed the cause. The user's workaround is switching to Firefox for exports.",
+    "must_include": [["Chrome"], ["Safari"], ["Firefox", "workaround"]],
+    "bait": ["cause was confirmed", "fix is being deployed", "browser extension conflict"]
+  },
+  {
+    "id": "S07",
+    "title": "Outage report",
+    "source": "Customer reports the dashboard was unreachable from 9:10 to 9:55 this morning. Status page shows a partial outage in the EU region during that window. Agent confirmed their account is hosted in the EU region and linked the incident report. Root cause analysis is due next week. Customer asked to be notified when it is published.",
+    "must_include": [["9:10", "9:55", "outage", "unreachable"], ["EU region", "EU"], ["root cause", "next week"]],
+    "bait": ["database failure", "45 minutes of data loss", "credits were applied"]
+  },
+  {
+    "id": "S08",
+    "title": "Plan downgrade request",
+    "source": "Customer wants to downgrade from the Team plan to the Starter plan at the end of the current billing cycle. Agent explained that on Starter they will lose access to shared workspaces and their user limit drops to three seats. Customer confirmed they understand and asked the downgrade to be scheduled. Agent scheduled it for 30 June and sent a confirmation email.",
+    "must_include": [["downgrade"], ["Starter"], ["30 June"], ["confirmation"]],
+    "bait": ["saved $30 a month", "was offered a discount to stay", "data will be deleted"]
+  },
+  {
+    "id": "S09",
+    "title": "API rate limit confusion",
+    "source": "Developer reports getting 429 errors around midday despite staying under what they believe is the limit. Agent clarified the documented limit is 600 requests per minute per key, but bursts are measured over a 10 second window. The customer's logs show spikes above the burst threshold. Agent suggested request batching and shared the rate limit documentation. Customer will try batching.",
+    "must_include": [["429"], ["600 requests per minute", "rate limit"], ["burst", "10 second"], ["batching"]],
+    "bait": ["limit was raised", "enterprise plan upgrade", "bug in the rate limiter"]
+  },
+  {
+    "id": "S10",
+    "title": "Refund approved case",
+    "source": "Customer was charged the annual price of $588 after intending to select monthly billing. They contacted support within two days of the charge. Under the refund policy, changes within 14 days qualify for a full refund. Agent approved the refund of $588 and switched the account to monthly billing at $59 per month. Refund reference RF-2231 was shared; funds arrive in 5 to 7 business days.",
+    "must_include": [["$588"], ["refund", "approved"], ["monthly"], ["5 to 7 business days", "RF-2231"]],
+    "bait": ["$49 per month", "goodwill credit"]
+  },
+  {
+    "id": "S11",
+    "title": "Data privacy question",
+    "source": "A prospect asks where customer data is stored and whether the company is GDPR compliant. Agent replied that data is stored in Frankfurt with backups in Dublin, both within the EU, and shared the data processing agreement. The prospect also asked about SOC 2; agent confirmed a SOC 2 Type II report is available under NDA. Prospect will review with their legal team.",
+    "must_include": [["Frankfurt"], ["Dublin", "EU"], ["SOC 2", "NDA"]],
+    "bait": ["ISO 27001", "US data centre option", "signed the DPA"]
+  },
+  {
+    "id": "S12",
+    "title": "Mobile app crash",
+    "source": "User reports the iOS app crashes when opening the reports tab. Crash started after updating to app version 5.2. Agent could not reproduce on iOS 17 but reproduced it on iOS 16. Engineering identified a fix and it is included in version 5.2.1, submitted to the App Store and awaiting review. Agent advised using the web app until the update is live.",
+    "must_include": [["crash", "crashes"], ["5.2.1"], ["App Store", "awaiting review"], ["web app"]],
+    "bait": ["released tomorrow", "Android is affected"]
+  },
+  {
+    "id": "S13",
+    "title": "Onboarding stalled",
+    "source": "New customer's onboarding has stalled at the data migration step for two weeks. Their CSV files fail validation due to inconsistent date formats. Agent shared the expected format and offered a working session on Thursday to fix the files together. Customer accepted the session. Go-live target remains the first week of July but is at risk if migration slips further.",
+    "must_include": [["migration", "data migration"], ["date formats", "validation"], ["Thursday", "working session"], ["July", "at risk"]],
+    "bait": ["go-live was moved", "dedicated migration engineer was assigned"]
+  },
+  {
+    "id": "S14",
+    "title": "Security concern report",
+    "source": "Customer reports that a former employee still appears in their user list a month after offboarding. Agent checked and the account was deactivated on 12 May but remains visible in the list view. Engineering confirmed a display bug: deactivated accounts cannot log in or access data, and hiding them from the list is planned in the next sprint.",
+    "must_include": [["former employee", "deactivated"], ["12 May"], ["display bug", "cannot log in"], ["next sprint"]],
+    "bait": ["data was accessed", "security incident was raised", "account was deleted"]
+  },
+  {
+    "id": "S15",
+    "title": "Pricing clarification",
+    "source": "Customer asks whether seats can be added mid-cycle and how they are billed. Agent explained added seats are prorated for the remainder of the cycle at $12 per seat per month, and appear as a separate line on the next invoice. Customer plans to add four seats next Monday after two hires start. No change has been made to the account yet.",
+    "must_include": [["prorated"], ["$12"], ["four seats", "no change yet", "not been made"]],
+    "bait": ["seats were added", "$48 charged", "annual discount"]
+  },
+  {
+    "id": "S16",
+    "title": "Integration failure",
+    "source": "The customer's Slack integration stopped posting notifications on Sunday. Agent found the Slack workspace token was revoked on the customer side, likely during their workspace migration. Reconnecting requires a workspace admin to reauthorise the app. Agent sent the reauthorisation link and step-by-step instructions. Waiting on the customer's admin to complete the steps.",
+    "must_include": [["Slack"], ["token", "revoked"], ["admin", "reauthorise", "reauthorisation"], ["waiting"]],
+    "bait": ["our engineers fixed the integration", "notifications resumed", "bug on our side"]
+  }
+]
