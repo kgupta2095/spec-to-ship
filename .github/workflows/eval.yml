@@ -1,0 +1,31 @@
+name: Run evals
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run eval suites
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python -m src.run_eval
+
+      - name: Commit results
+        run: |
+          git config user.name "eval-runner"
+          git config user.email "actions@users.noreply.github.com"
+          git add evals/RESULTS.md
+          git diff --cached --quiet || git commit -m "Eval results: real model run (CI)"
+          git push
