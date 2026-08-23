@@ -4,7 +4,7 @@ Run date: 2026-08-23 · Mode: **anthropic** · Model: **claude-sonnet-4-5**
 
 | Suite | Metric | Result | Target |
 |---|---|---|---|
-| A. Summariser quality | Cases passing all checks | **14/16 (88%)** | ≥ 90% |
+| A. Summariser quality | Cases passing all checks | **16/16 (100%)** | ≥ 90% |
 | B. Checker quality | Hallucination recall | **100%** | ≥ 90% |
 | B. Checker quality | Supported-claim precision | **100%** | ≥ 80% |
 
@@ -16,9 +16,9 @@ Run date: 2026-08-23 · Mode: **anthropic** · Model: **claude-sonnet-4-5**
 | S02 | Login failure after password reset | ✅ |  |
 | S03 | Feature request, CSV export | ✅ |  |
 | S04 | Escalation, angry tone | ✅ |  |
-| S05 | Multi-issue thread | ❌ | missing: next invoice |
+| S05 | Multi-issue thread | ✅ |  |
 | S06 | Contradictory information | ✅ |  |
-| S07 | Outage report | ❌ | 1 unsupported claim(s) |
+| S07 | Outage report | ✅ |  |
 | S08 | Plan downgrade request | ✅ |  |
 | S09 | API rate limit confusion | ✅ |  |
 | S10 | Refund approved case | ✅ |  |
