@@ -51,6 +51,8 @@ Results are written to `evals/RESULTS.md` with the run date, mode, and model.
 
 The committed [evals/RESULTS.md](evals/RESULTS.md) shows the latest run. The no-LLM extractive baseline (mock mode) scores low on Suite A by design; that gap between baseline and model is what the harness measures. Targets, defined in the PRD before build: Suite A ≥ 90%, checker recall ≥ 90%, checker precision ≥ 80%.
 
+The current numbers came from one loop of eval-driven iteration, run in CI (see `.github/workflows/eval.yml` and the commit history): the extractive baseline scored 5/16 on Suite A, the first real-model run (claude-sonnet-4-5) scored 14/16 with the checker at 100% recall and 100% precision, and the two failures it surfaced (a dropped follow-up date in a multi-issue thread; a customer request reported as a commitment) were fixed with one targeted prompt change, taking the second run to 16/16. The eval checks themselves were not touched between runs.
+
 ## Design decisions
 
 - **Two passes, not one.** Asking a model to "summarise accurately" is a request; verifying each claim independently is a control. Controls beat requests in production.
