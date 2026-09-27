@@ -1,5 +1,7 @@
 # Eval results
 
+**Recorded model run (claude-sonnet-4-5, 2026-08-23)**
+
 Run date: 2026-08-23 · Mode: **anthropic** · Model: **claude-sonnet-4-5**
 
 | Suite | Metric | Result | Target |

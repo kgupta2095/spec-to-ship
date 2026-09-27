@@ -34,7 +34,7 @@ The check is the product. A summary that cannot pass its own audit does not ship
 
 ## 5. Eval plan
 
-Two suites, both runnable with one command, results written to `evals/RESULTS.md`.
+Two suites, both runnable with one command. A model run writes `evals/RESULTS.md`; the no-key baseline writes `evals/RESULTS.mock.md` and never overwrites the model run.
 
 - **Suite A, summariser quality (16 cases):** synthetic ticket threads covering billing disputes, login failures, feature requests, escalations, multi-issue threads, and contradictory information. Each case defines: facts the summary must include (with accepted alternatives), and bait, plausible details deliberately absent from the source (amounts, dates, promises). A case passes when all required facts are present, no bait appears, and the ground-check finds zero unsupported claims.
 - **Suite B, checker quality (6 trap cases):** fixture summaries with labelled unsupported claims planted next to labelled supported ones. Measures whether the guardrail actually catches hallucinations (recall) without flagging good claims (precision).
@@ -45,12 +45,13 @@ Suite B exists because an unmeasured guardrail is a decorative one.
 
 - Ground-check gate: if any unsupported claim is found, the summary is blocked and never shown.
 - Fallback: on model error or low-confidence verification, degrade to "no summary" rather than best-guess.
+- Fail closed: a claim counts as supported only when the checker's reply starts with SUPPORTED. An empty, garbled or hedged reply counts as unsupported, and a summary with no checkable claims is blocked.
 - Human in the loop: blocked summaries are queued for human review, not silently discarded.
 
 ## 7. Rollout
 
 1. Mock mode (no API): deterministic extractive baseline, validates pipeline and evals in CI.
-2. Model mode behind the eval gate: release only when Suite A ≥ 90% and Suite B recall ≥ 90%.
+2. Model mode behind the eval gate: release only when every section 3 target is met (Suite A ≥ 90%, checker recall ≥ 90%, checker precision ≥ 80%). The eval runner exits non-zero when a target is missed, so a failing run turns CI red.
 3. Shadow period: summaries generated but only shown to reviewers, comparing block rate against targets.
 
 ## 8. Out of scope for v1
