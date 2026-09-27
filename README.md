@@ -2,7 +2,7 @@
 
 **An LLM feature taken from spec to release: spec first, guardrail second, evals before release.**
 
-**Try it in your browser:** the browser version of this pipeline is the [Site Brief case study](https://kgupta2095.github.io/cases/site-brief/).
+**Try it in your browser:** a no-setup demo of this guardrail design is [Exhibit 01 on my portfolio](https://kgupta2095.github.io/#guardrail).
 
 This repo is a working, end-to-end demonstration of how I take an AI feature from product spec to shippable: a support-ticket summariser whose output is gated by a fact check against the source (groundedness check), with two eval suites that measure both the feature and the guardrail. It exists because "we added AI" is easy, and "we can prove it does not invent facts" is the actual job.
 
