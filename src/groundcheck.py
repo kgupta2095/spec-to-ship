@@ -1,6 +1,11 @@
 """Pass 2: the guardrail. Extract claims from a summary and verify each against the source.
 
-A summary with any UNSUPPORTED claim is blocked (never shown to a user).
+A summary with any unsupported claim is blocked (never shown to a user).
+
+The guardrail fails closed: a claim counts as supported only when the verifier
+reply starts with SUPPORTED. An empty, garbled or hedged reply ("NO",
+"Not supported", "I think it is supported") counts as unsupported, and a
+summary with no checkable claims is blocked too.
 """
 
 import json
@@ -31,13 +36,24 @@ def extract_claims(summary: str):
         return sentences(summary)  # fallback: sentence-level claims
 
 
+def is_supported(verdict) -> bool:
+    """Fail closed: only a reply that starts with SUPPORTED counts as supported."""
+    if not isinstance(verdict, str):
+        return False
+    return verdict.strip().upper().startswith("SUPPORTED")
+
+
 def verify_claim(source: str, claim: str) -> bool:
     verdict = complete(VERIFY_SYSTEM, f"SOURCE:\n{source}\nCLAIM:\n{claim}", max_tokens=10)
-    return "UNSUPPORTED" not in verdict.upper()
+    return is_supported(verdict)
 
 
 def ground_check(source: str, summary: str):
-    """Return (passed, results) where results is a list of (claim, supported)."""
+    """Return (passed, results) where results is a list of (claim, supported).
+
+    Blocked (passed=False) when any claim is unsupported, or when there are no
+    claims at all: an empty summary has nothing verified, so it is not shown.
+    """
     results = [(c, verify_claim(source, c)) for c in extract_claims(summary)]
-    passed = all(ok for _, ok in results)
+    passed = bool(results) and all(ok for _, ok in results)
     return passed, results
