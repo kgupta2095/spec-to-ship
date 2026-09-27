@@ -1,5 +1,10 @@
 name: Run evals
 
+# Records a real model run in evals/RESULTS.md. Manual trigger only.
+# Needs an ANTHROPIC_API_KEY or OPENAI_API_KEY repository secret; without one it
+# stops before running anything, so baseline (mock) numbers can never be
+# committed as a "real model run".
+
 on:
   workflow_dispatch:
 
@@ -16,16 +21,37 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run eval suites
+      - name: Require a model API key
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python -m src.run_eval
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ] && [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error title=No model API key::Neither the ANTHROPIC_API_KEY nor the OPENAI_API_KEY repository secret is set. This workflow only records real model runs, so it has stopped rather than commit mock baseline numbers as a real run. For the no-key baseline, run 'python3 -m src.run_eval --mock' locally (it writes evals/RESULTS.mock.md)."
+            exit 1
+          fi
+          echo "Model API key found."
 
+      - name: Unit tests (guardrail fails closed, release gate)
+        run: python3 -m unittest -v
+
+      # Exits 1 when a PRD target is missed (Suite A < 90%, checker recall < 90%,
+      # checker precision < 80%), which turns the job red. --require-model is a
+      # second lock: it refuses to fall back to the mock baseline.
+      - name: Run eval suites
+        id: eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python3 -m src.run_eval --require-model
+
+      # Record the run whether the gate passed or failed (a failed run is still
+      # part of the eval history), but not if the eval step never ran.
       - name: Commit results
+        if: ${{ !cancelled() && (steps.eval.outcome == 'success' || steps.eval.outcome == 'failure') }}
         run: |
           git config user.name "eval-runner"
           git config user.email "actions@users.noreply.github.com"
           git add evals/RESULTS.md
-          git diff --cached --quiet || git commit -m "Eval results: real model run (CI)"
+          git diff --cached --quiet || git commit -m "Eval results: real model run (CI, release gate ${{ steps.eval.outcome == 'success' && 'passed' || 'failed' }})"
           git push
