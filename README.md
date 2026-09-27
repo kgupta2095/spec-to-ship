@@ -31,7 +31,7 @@ And because an unmeasured guardrail is decorative, the checker has its own eval 
 Python 3.10+, no dependencies.
 
 ```bash
-# no API key: deterministic extractive baseline (also what CI would run)
+# no API key: deterministic extractive baseline (CI uses the real model when a key secret is set)
 python -m src.run_eval --mock
 
 # real model: set one key, then run
@@ -51,7 +51,7 @@ Results are written to `evals/RESULTS.md` with the run date, mode, and model.
 
 The committed [evals/RESULTS.md](evals/RESULTS.md) shows the latest run. The no-LLM extractive baseline (mock mode) scores low on Suite A by design; that gap between baseline and model is what the harness measures. Targets, defined in the PRD before build: Suite A ≥ 90%, checker recall ≥ 90%, checker precision ≥ 80%.
 
-The current numbers came from one loop of eval-driven iteration, run in CI (see `.github/workflows/eval.yml` and the commit history): the extractive baseline scored 5/16 on Suite A, the first real-model run (claude-sonnet-4-5) scored 14/16 with the checker at 100% recall and 100% precision, and the two failures it surfaced (a dropped follow-up date in a multi-issue thread; a customer request reported as a commitment) were fixed with one targeted prompt change, taking the second run to 16/16. The eval checks themselves were not touched between runs.
+The current numbers came from one loop of eval-driven iteration (see `.github/workflows/eval.yml` and the commit history): the extractive baseline, run locally, scored 5/16 on Suite A; the first real-model run in CI (claude-sonnet-4-5) scored 14/16 with the checker at 100% recall and 100% precision, and the two failures it surfaced (a dropped timing detail in a multi-issue thread; a customer request reported as a commitment) were fixed with one targeted prompt change, taking the second run to 16/16. The eval checks themselves were not touched between runs.
 
 ## Design decisions
 

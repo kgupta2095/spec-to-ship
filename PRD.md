@@ -1,6 +1,6 @@
 # PRD: Grounded Ticket Summariser
 
-**Author:** Karan Gupta · **Status:** Shipped (v1) · **Doc type:** Product spec with eval plan
+**Author:** Karan Gupta · **Status:** v1 complete, eval bar met (personal project on synthetic data; not deployed) · **Doc type:** Product spec with eval plan
 
 ## 1. Problem
 
