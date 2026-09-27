@@ -3,7 +3,9 @@
 Modes:
   - real: ANTHROPIC_API_KEY or OPENAI_API_KEY present
   - mock: no key or --mock flag; deterministic extractive baseline so the
-    pipeline and evals run without network access (also used in CI)
+    pipeline and evals run without network access. Results go to
+    evals/RESULTS.mock.md. The Tests workflow runs it on every push; the
+    model-run workflow (eval.yml) refuses to run without a key.
 """
 
 import json

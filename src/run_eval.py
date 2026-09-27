@@ -1,8 +1,20 @@
-"""Run both eval suites and write evals/RESULTS.md.
+"""Run both eval suites, write the results file, and enforce the release gate.
 
 Usage:
-  python -m src.run_eval          # real model if a key is set, else mock baseline
-  python -m src.run_eval --mock   # force the deterministic baseline
+  python3 -m src.run_eval                   # real model if a key is set, else mock baseline
+  python3 -m src.run_eval --mock            # force the deterministic no-LLM baseline
+  python3 -m src.run_eval --require-model   # refuse to run without a model key (CI)
+
+Where results go:
+  model run (a key is set)  -> evals/RESULTS.md       (the recorded model run)
+  mock / no key             -> evals/RESULTS.mock.md  (never touches RESULTS.md)
+
+Exit codes:
+  0  model run met every PRD target, or a mock run (the gate is not enforced on
+     the baseline, which is meant to score low)
+  1  model run missed a target: Suite A < 90%, checker recall < 90% or
+     checker precision < 80%
+  2  --require-model was given but no ANTHROPIC_API_KEY / OPENAI_API_KEY is set
 """
 
 import argparse
@@ -17,6 +29,11 @@ from .groundcheck import ground_check, verify_claim
 from .summarize import summarize
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Release gate, from PRD section 3 (defined before build).
+TARGET_SUITE_A = 0.90
+TARGET_RECALL = 0.90
+TARGET_PRECISION = 0.80
 
 
 def load(name):
@@ -63,32 +80,88 @@ def suite_b(traps):
     return recall, precision, rows
 
 
-def main():
+def gate_failures(a_rate, recall, precision):
+    """Return the PRD targets this run missed. An empty list means the gate passes."""
+    checks = [
+        ("Suite A pass rate", a_rate, TARGET_SUITE_A),
+        ("Checker recall", recall, TARGET_RECALL),
+        ("Checker precision", precision, TARGET_PRECISION),
+    ]
+    return [
+        f"{name} {value:.0%} is below the {target:.0%} target"
+        for name, value, target in checks
+        if value < target - 1e-9
+    ]
+
+
+def results_path(mode):
+    """Mock runs never overwrite the recorded model run in evals/RESULTS.md."""
+    name = "RESULTS.mock.md" if mode == "mock" else "RESULTS.md"
+    return ROOT / "evals" / name
+
+
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--mock", action="store_true", help="force deterministic baseline")
-    args = ap.parse_args()
+    ap.add_argument(
+        "--require-model", action="store_true",
+        help="exit 2 instead of falling back to the mock baseline when no key is set (CI)",
+    )
+    args = ap.parse_args(argv)
     if args.mock:
         os.environ.pop("ANTHROPIC_API_KEY", None)
         os.environ.pop("OPENAI_API_KEY", None)
 
     mode = llm.provider()
+    if mode == "mock" and args.require_model:
+        print(
+            "ERROR: --require-model was given but neither ANTHROPIC_API_KEY nor "
+            "OPENAI_API_KEY is set (or --mock was also given). Refusing to run, so "
+            "baseline numbers are never recorded as a model run.",
+            file=sys.stderr,
+        )
+        return 2
+
     model = {"anthropic": llm.ANTHROPIC_MODEL, "openai": llm.OPENAI_MODEL}.get(mode, "extractive baseline (no LLM)")
     cases, traps = load("cases.json"), load("traps.json")
 
     a_pass, a_rows = suite_a(cases)
     recall, precision, b_rows = suite_b(traps)
     a_rate = a_pass / len(cases)
+    failures = gate_failures(a_rate, recall, precision)
 
-    lines = [
-        "# Eval results",
-        "",
-        f"Run date: {date.today().isoformat()} · Mode: **{mode}** · Model: **{model}**",
+    if mode == "mock":
+        header = [
+            "# Eval results: mock baseline",
+            "",
+            "**Synthetic: no-LLM extractive baseline on the synthetic cases (deterministic, not a model run).**",
+            "",
+            f"Mode: **{mode}** · Model: **{model}** · No run date: the output is identical on every run, "
+            "so `python3 -m src.run_eval --mock` reproduces this file exactly.",
+            "",
+            "Release gate: **not enforced**. The baseline is the comparison point and is meant to score low; "
+            "the recorded model run is in [RESULTS.md](RESULTS.md).",
+        ]
+    else:
+        today = date.today().isoformat()
+        verdict = "**PASS** (every target met)" if not failures else "**FAIL**: " + "; ".join(failures)
+        header = [
+            "# Eval results",
+            "",
+            f"**Recorded model run ({model}, {today})**",
+            "",
+            f"Run date: {today} · Mode: **{mode}** · Model: **{model}**",
+            "",
+            f"Release gate: {verdict}",
+        ]
+
+    lines = header + [
         "",
         "| Suite | Metric | Result | Target |",
         "|---|---|---|---|",
-        f"| A. Summariser quality | Cases passing all checks | **{a_pass}/{len(cases)} ({a_rate:.0%})** | ≥ 90% |",
-        f"| B. Checker quality | Hallucination recall | **{recall:.0%}** | ≥ 90% |",
-        f"| B. Checker quality | Supported-claim precision | **{precision:.0%}** | ≥ 80% |",
+        f"| A. Summariser quality | Cases passing all checks | **{a_pass}/{len(cases)} ({a_rate:.0%})** | ≥ {TARGET_SUITE_A:.0%} |",
+        f"| B. Checker quality | Hallucination recall | **{recall:.0%}** | ≥ {TARGET_RECALL:.0%} |",
+        f"| B. Checker quality | Supported-claim precision | **{precision:.0%}** | ≥ {TARGET_PRECISION:.0%} |",
         "",
         "## Suite A detail",
         "",
@@ -110,12 +183,24 @@ def main():
         lines.append(f"| {r['id']} | {r['caught']} | {r['kept']} |")
     lines.append("")
 
-    out = ROOT / "evals" / "RESULTS.md"
-    out.write_text("\n".join(lines))
-    print("\n".join(lines[:10]))
+    out = results_path(mode)
+    out.write_text("\n".join(lines), encoding="utf-8")
+    print("\n".join(lines[: len(header) + 6]))
     print(f"\nWrote {out}")
+
     if mode == "mock":
-        print("\nNote: mock mode is the no-LLM extractive baseline. Set ANTHROPIC_API_KEY or OPENAI_API_KEY for a real run.")
+        print(
+            "\nNote: mock mode is the no-LLM extractive baseline, so the release gate is not enforced "
+            "and evals/RESULTS.md (the recorded model run) is left untouched. "
+            "Set ANTHROPIC_API_KEY or OPENAI_API_KEY for a real run."
+        )
+        return 0
+    if failures:
+        print("\nRELEASE GATE: FAIL")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print("\nRELEASE GATE: PASS")
     return 0
 
 
